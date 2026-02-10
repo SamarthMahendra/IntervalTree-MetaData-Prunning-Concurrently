@@ -23,19 +23,6 @@
 // <"2024-01-01", "website">: ["2024-01-01/0008.parquet"]
 // <"2024-01-04", "youth">: ["2024-01-04/0001.parquet"]
 
-// lookup [date] - > []
-
-// iterval (a, b)
-
- // Tree -> itervals - >
-
-// """ million files -> iterate  """
-//
-
-
-
-// two -> [itervals]
-// 3 -> split -> add
 
 
 #include <unordered_map>
