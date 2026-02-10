@@ -61,6 +61,7 @@ class Node {
 Interval data;
 Node* left;
 Node* right;
+mutex m;
 
 public:
     Node(): data(Interval("", "", "")) {
@@ -69,6 +70,7 @@ public:
     }
 
     void insert(const string& start, const string& end, string file_name) {
+        unique_lock<mutex> lock(m);
         if (this->data.leaf) {
             this->data.start = start;
             this->data.end = end;
@@ -80,10 +82,14 @@ public:
         }
         else {
             if (start <= this->data.start) {
+                lock.unlock();
                 left->insert(start, end, file_name);
+                lock.lock();
             }
             else {
+                lock.unlock();
                 right->insert(start, end, file_name);
+                lock.lock();
             }
 
         }
@@ -92,6 +98,7 @@ public:
     }
 
     vector<string> find(string search_key) {
+        unique_lock<mutex>  m;
         vector<string> res;
 
         if (this->data.start <= search_key && search_key <= this->data.end) {
@@ -128,10 +135,26 @@ int main() {
     root->insert("aaa", "app", "2024-01-01/0001.parquet");
     root->insert("baa", "cat", "2024-01-01/0002.parquet");
     root->insert("bob", "dad", "2024-01-01/0003.parquet");
-    while (true) {
-        cout<<"daa"<<endl;
-        for (auto x: root->find("daa")) {
-            cout<<x<<endl;
+    thread t1([&]() {
+        while (true) {
+            cout<<"daa"<<endl;
+                for (auto x: root->find("daa")) {
+        cout<<x<<endl;
         }
-    }
+        }
+
+    });
+
+
+    thread t2([&]() {
+        while (true) {
+            cout<<"aba"<<endl;
+for (auto x: root->find("aba")) {
+    cout<<x<<endl;
+        }
+        }
+    });
+    t1.join();
+    t2.join();
+
 }
